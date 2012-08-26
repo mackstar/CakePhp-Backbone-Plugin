@@ -1,0 +1,45 @@
+# CakePHP Backbone Plugin
+
+This is a very simple CakePHP plugin enabling you to add Backbone to your cake projects.
+
+It does very little apart from supply you with the backbone base files, 
+and offer you and a 'controller component' with a customized 'json'.
+
+This will mate sure Cake controller set model properties will be output in the style 
+Backbone is happy with. 
+
+## Dependencies
+
+In order to have the base files automatically loaded you need to install Mark Story's excellent 'Asset Compress' plugin
+
+AssetCompress is available at [github](http://github.com/markstory/asset_compress)
+
+### Installation
+
+In your bootstrap.php make sure you include the plugin
+
+	`CakePlugin::load('Backbone');`
+	
+Make sure you add set the correct files in  your compress_asset.ini
+
+	`[js]
+	paths[] = /cake/Backbone/`
+
+	`[backbone-base.js]
+	files[] = lib/jquery-min.js
+	files[] = lib/underscore-min.js
+	files[] = lib/backbone-min.js`
+	
+You can then show that you are going to use the Backbone component and 
+asset compress helper in your controllers.
+
+	`var $helpers = array('AssetCompress.AssetCompress');
+	
+	public $components = array (
+		'RequestHandler',
+		'Backbone.Backbone'
+	);`
+
+Then add the backbone files to your view.
+
+	`<?php echo $this->AssetCompress->script('backbone-base'); ?>`
