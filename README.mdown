@@ -18,28 +18,28 @@ AssetCompress is available at [github](http://github.com/markstory/asset_compres
 
 In your bootstrap.php make sure you include the plugin
 
-	`CakePlugin::load('Backbone');`
+	CakePlugin::load('Backbone');
 	
 Make sure you add set the correct files in  your compress_asset.ini
 
-	`[js]
-	paths[] = /cake/Backbone/`
+	[js]
+	paths[] = /cake/Backbone/
 
-	`[backbone-base.js]
+	[backbone-base.js]
 	files[] = lib/jquery-min.js
 	files[] = lib/underscore-min.js
-	files[] = lib/backbone-min.js`
+	files[] = lib/backbone-min.js
 	
 You can then show that you are going to use the Backbone component and 
 asset compress helper in your controllers.
 
-	`var $helpers = array('AssetCompress.AssetCompress');
+	var $helpers = array('AssetCompress.AssetCompress');
 	
 	public $components = array (
 		'RequestHandler',
 		'Backbone.Backbone'
-	);`
+	);
 
 Then add the backbone files to your view.
 
-	`<?php echo $this->AssetCompress->script('backbone-base'); ?>`
+	<?php echo $this->AssetCompress->script('backbone-base'); ?>
