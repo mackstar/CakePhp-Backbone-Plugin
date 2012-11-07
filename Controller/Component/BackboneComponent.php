@@ -15,7 +15,7 @@ Class BackboneComponent extends Component {
 	 * @param $controller object The controller object
 	 * @return void
 	 */
-	public function startup($controller) {
+	public function startup(Controller $controller) {
 		if (!$controller->RequestHandler->isAjax()) {
 			return;
 		}
@@ -29,7 +29,7 @@ Class BackboneComponent extends Component {
 	 * @param $controller object The controller object
 	 * @return void
 	 */
-	public function beforeRender(&$controller) {
+	public function beforeRender(Controller $controller) {
 		if (!$controller->RequestHandler->isAjax()) {
 			return;
 		}
