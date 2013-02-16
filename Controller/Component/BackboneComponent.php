@@ -16,10 +16,18 @@ Class BackboneComponent extends Component {
 	 * @return void
 	 */
 	public function startup(Controller $controller) {
-		if (!$controller->RequestHandler->isAjax()) {
+		if (!$controller->RequestHandler->isAjax() && !$this->_isJsonRequest($controller)) {
 			return;
 		}
 		$controller->view = 'Backbone./Backbone/json';
+	}
+
+	protected function _isJsonRequest(Controller $controller) {
+		$extensionSet = (isset($controller->request->params['ext']));
+		if ($extensionSet) {
+			return ($controller->request->params['ext'] == 'json');
+		}
+		return false;
 	}
 
 	/*
@@ -30,7 +38,7 @@ Class BackboneComponent extends Component {
 	 * @return void
 	 */
 	public function beforeRender(Controller $controller) {
-		if (!$controller->RequestHandler->isAjax()) {
+		if (!$controller->RequestHandler->isAjax() && !$this->_isJsonRequest($controller)) {
 			return;
 		}
 		$controllerName = $controller->request->params['controller'];
@@ -39,7 +47,7 @@ Class BackboneComponent extends Component {
 		$modelName = Inflector::camelize($singular);
 		switch ($action) {
 			case 'index': 
-				$param = $controllerName;				
+				$param = $controllerName;
 				break;
 			case 'add':
 				$param = $singular;
