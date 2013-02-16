@@ -9,10 +9,10 @@
 if ($this->Session->check('Message.error')): 
   '{"error":{"text":'. $this->Session->flash('error') .'}}';
 else:
-  if (isset($object)):
-    echo json_encode($object);
-  endif;
-  $this->Session->flash();
+	if (isset($object)):
+		echo json_encode($object);
+	endif;
+	$this->Session->flash();
 endif;
 
 ?>
