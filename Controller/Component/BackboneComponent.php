@@ -64,17 +64,44 @@ Class BackboneComponent extends Component {
 		}
 		if (!isset($object) && isset($param)) {
 			if (isset($controller->viewVars[$param][0][$modelName])) {
-				$controller->set('object', array_map(function($row) use ($modelName) {
+				$object = array_map(function($row) use ($modelName) {
 					return $row[$modelName];
-				}, $controller->viewVars[$param]));
+				}, $controller->viewVars[$param]);
+				$controller->set('object', $object);
 			}
 			elseif (isset($controller->viewVars[$param][$modelName])) {
-				$controller->set('object', $controller->viewVars[$param][$modelName]);
+				$object = $controller->viewVars[$param][$modelName];
+				$controller->set('object', $object);
+
 			} else {
-				$controller->set('object', $controller->viewVars[$param]);
+				$object = $controller->viewVars[$param];
+				$controller->set('object', $object);
 			}
 		} elseif(isset($object)) {
 			$controller->set('object', $object);
 		}
+
+		// respond as application/json in the headers
+		$controller->RequestHandler->respondAs('json');
+		$callback = $this->_hasCallback($controller);
+		if ($cb) {
+			$controller->autoRender = false;
+			echo $cb."(".json_encode($object).");";
+		}
 	}
+
+/**
+ * Checks for callback parameter and returns it. Mainly for jsonp callback.
+ * Assume it as $callback
+ *
+ * @param $controller object The controller object
+ * @return void
+ */
+	protected function _hasCallback(Controller $controller) {
+		if (!empty($_GET['$callback'])) {
+			return $_GET['$callback'];
+		}
+		return false;
+	}
+
 }
