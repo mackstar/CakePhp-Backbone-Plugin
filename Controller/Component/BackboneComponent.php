@@ -84,9 +84,9 @@ Class BackboneComponent extends Component {
 		// respond as application/json in the headers
 		$controller->RequestHandler->respondAs('json');
 		$callback = $this->_hasCallback($controller);
-		if ($cb) {
+		if ($callback) {
 			$controller->autoRender = false;
-			echo $cb."(".json_encode($object).");";
+			echo $callback."(".json_encode($object).");";
 		}
 	}
 
