@@ -16,10 +16,18 @@ Class BackboneComponent extends Component {
 	 * @return void
 	 */
 	public function startup(Controller $controller) {
-		if (!$controller->RequestHandler->isAjax()) {
+		if (!$controller->RequestHandler->isAjax() && !$this->_isJsonRequest($controller)) {
 			return;
 		}
 		$controller->view = 'Backbone./Backbone/json';
+	}
+
+	protected function _isJsonRequest(Controller $controller) {
+		$extensionSet = (isset($controller->request->params['ext']));
+		if ($extensionSet) {
+			return ($controller->request->params['ext'] == 'json');
+		}
+		return false;
 	}
 
 	/*
@@ -30,7 +38,7 @@ Class BackboneComponent extends Component {
 	 * @return void
 	 */
 	public function beforeRender(Controller $controller) {
-		if (!$controller->RequestHandler->isAjax()) {
+		if (!$controller->RequestHandler->isAjax() && !$this->_isJsonRequest($controller)) {
 			return;
 		}
 		$controllerName = $controller->request->params['controller'];
@@ -39,7 +47,7 @@ Class BackboneComponent extends Component {
 		$modelName = Inflector::camelize($singular);
 		switch ($action) {
 			case 'index': 
-				$param = $controllerName;				
+				$param = $controllerName;
 				break;
 			case 'add':
 				$param = $singular;
@@ -56,17 +64,44 @@ Class BackboneComponent extends Component {
 		}
 		if (!isset($object) && isset($param)) {
 			if (isset($controller->viewVars[$param][0][$modelName])) {
-				$controller->set('object', array_map(function($row) use ($modelName) {
+				$object = array_map(function($row) use ($modelName) {
 					return $row[$modelName];
-				}, $controller->viewVars[$param]));
+				}, $controller->viewVars[$param]);
+				$controller->set('object', $object);
 			}
 			elseif (isset($controller->viewVars[$param][$modelName])) {
-				$controller->set('object', $controller->viewVars[$param][$modelName]);
+				$object = $controller->viewVars[$param][$modelName];
+				$controller->set('object', $object);
+
 			} else {
-				$controller->set('object', $controller->viewVars[$param]);
+				$object = $controller->viewVars[$param];
+				$controller->set('object', $object);
 			}
 		} elseif(isset($object)) {
 			$controller->set('object', $object);
 		}
+
+		// respond as application/json in the headers
+		$controller->RequestHandler->respondAs('json');
+		$callback = $this->_hasCallback($controller);
+		if ($callback) {
+			$controller->autoRender = false;
+			echo $callback."(".json_encode($object).");";
+		}
 	}
+
+/**
+ * Checks for callback parameter and returns it. Mainly for jsonp callback.
+ * Assume it as $callback
+ *
+ * @param $controller object The controller object
+ * @return void
+ */
+	protected function _hasCallback(Controller $controller) {
+		if (!empty($_GET['$callback'])) {
+			return $_GET['$callback'];
+		}
+		return false;
+	}
+
 }
